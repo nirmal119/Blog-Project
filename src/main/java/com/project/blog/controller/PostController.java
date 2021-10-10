@@ -28,27 +28,26 @@ public class PostController {
         this.commentService = commentService;
     }
 
-    @GetMapping("/create")
-    public String createPost(Principal principal, Model model){
-        Post post = new Post();
-        Tag tag = new Tag();
-        Optional<User> userOptional = userService.findByName(principal.getName());
-
-        if (userOptional.isPresent()){
-            User user = userOptional.get();
-            post.setAuthor(user.getName());
-            model.addAttribute("post", post);
-            model.addAttribute("tag", tag);
-            return "newPost";
-        }else {
-            return "/fail";
-        }
-    }
+//    @GetMapping("/create")
+//    public Post createPost(Principal principal, Model model){
+//        Post post = new Post();
+//        Tag tag = new Tag();
+//        Optional<User> userOptional = userService.findByName(principal.getName());
+//
+//        if (userOptional.isPresent()){
+//            User user = userOptional.get();
+//            post.setAuthor(user.getName());
+//            model.addAttribute("post", post);
+//            model.addAttribute("tag", tag);
+//            return "newPost";
+//        }else {
+//            return "/fail";
+//        }
+//    }
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public String savePost(@ModelAttribute("post") Post post,
-                           @ModelAttribute("tag") Tag tag,
-                           BindingResult bindingResult) {
+    public void savePost(@RequestBody Post post,
+                         @RequestBody Tag tag) {
         String[] tagList = tag.getName().split(",");
         Set<Tag> tagSet = new HashSet<Tag>();
         for(String data : tagList){
@@ -58,18 +57,10 @@ public class PostController {
             tempTag.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
             tagSet.add(tempTag);
         }
-
         post.setTags(tagSet);
         String excerpt = post.getContent().substring(0,500);
         post.setExcerpt(excerpt);
-
-        if (bindingResult.hasErrors()) {
-            return "fail";
-        }
-        else {
             postService.save(post);
-            return "redirect:/";
-        }
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
