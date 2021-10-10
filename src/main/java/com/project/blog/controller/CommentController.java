@@ -8,18 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
+
 import java.security.Principal;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
 public class CommentController {
     private final CommentService commentService;
     private final PostService postService;
+    private Object ObjectNotFoundException;
 
     @Autowired
     public CommentController(CommentService commentService, PostService postService) {
@@ -51,21 +52,40 @@ public class CommentController {
         return "/writeComment";
     }
 
+    @RequestMapping(value = "/editComment/{id}/{commentId}", method = RequestMethod.GET)
+    public Map<String,Object> editComment(@PathVariable Long id,
+                                          @PathVariable Long commentId,
+                                          Principal principal) throws Throwable {
+        Optional<Post> optionalPost = postService.findPostById(id);
+        Optional<Comment> optionalComment = commentService.getComment(commentId);
+        Map<String,Object> objectsToEdit = new HashMap<>();
+
+        if (optionalPost.isPresent()) {
+            Post post = optionalPost.get();
+            if (isPrincipalOwnerOfPost(principal, post)) {
+                if (optionalComment.isPresent()) {
+                    Comment comment = optionalComment.get();
+                    objectsToEdit.put("comment", comment);
+                }
+                return objectsToEdit;
+            } else {
+                throw (Throwable) ObjectNotFoundException;
+            }
+        } else {
+            throw (Throwable) ObjectNotFoundException;
+        }
+    }
+
     @RequestMapping(value = "/updateComment", method = RequestMethod.POST)
-    public String updateComment(@ModelAttribute("comment") Comment comment,
-                                BindingResult bindingResult){
+    public void updateComment(@RequestBody Comment comment){
         Optional<Comment> optionalComment = commentService.getComment(comment.getId());
-        Comment updateComment = optionalComment.get();
+        Comment updateComment = new Comment();
+        if(optionalComment.isPresent()){
+            updateComment = optionalComment.get();
+        }
         updateComment.setComment(comment.getComment());
         updateComment.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-
-        if (bindingResult.hasErrors()) {
-            return "fail";
-        }
-        else {
             commentService.save(updateComment);
-            return  "redirect:/post/" + comment.getPostId();
-        }
     }
 
     @RequestMapping(value = "/comment/{id}", method = RequestMethod.DELETE)

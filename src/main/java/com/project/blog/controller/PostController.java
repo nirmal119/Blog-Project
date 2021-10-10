@@ -138,7 +138,7 @@ public class PostController {
     }
 
     @RequestMapping(value = "/post/{id}", method = RequestMethod.DELETE)
-    public String deletePost(@PathVariable Long id,
+    public void deletePost(@PathVariable Long id,
                                    Principal principal) {
         Optional<Post> optionalPost = postService.findPostById(id);
 
@@ -146,41 +146,13 @@ public class PostController {
             Post post = optionalPost.get();
             if (isPrincipalOwnerOfPost(principal, post)) {
                 postService.delete(post);
-                return "redirect:/";
-            } else {
-                return "/403";
             }
-        } else {
-            return "/fail";
         }
     }
 
-    @RequestMapping(value = "/editComment/{id}/{commentId}", method = RequestMethod.GET)
-    public String editComment(@PathVariable Long id,
-                              @PathVariable Long commentId,
-                                 Principal principal,
-                                 Model model) {
-        Optional<Post> optionalPost = postService.findPostById(id);
-        Optional<Comment> optionalComment = commentService.getComment(commentId);
 
-        if (optionalPost.isPresent()) {
-            Post post = optionalPost.get();
-            if (isPrincipalOwnerOfPost(principal, post)) {
-                model.addAttribute("username", principal.getName());
-                if (optionalComment.isPresent()) {
-                    Comment comment = optionalComment.get();
-                    model.addAttribute("comment", comment);
-                }
-                return "/updateComment";
-            } else {
-                return "/fail";
-            }
-        } else {
-            return "/fail";
-        }
-    }
 
     private boolean isPrincipalOwnerOfPost(Principal principal, Post post) {
         return principal != null && principal.getName().equals(post.getAuthor());
-    }
+   }
 }
