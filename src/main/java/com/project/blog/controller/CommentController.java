@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Controller
+@RestController
 public class CommentController {
     private final CommentService commentService;
     private final PostService postService;
@@ -29,18 +29,10 @@ public class CommentController {
     }
 
     @RequestMapping(value = "/createComment", method = RequestMethod.POST)
-    public String createNewComment(@ModelAttribute("newComment") Comment comment,
-                                BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            return "/commentForm";
-        } else {
-            System.out.println(comment.getComment());
+    public void createNewComment(@RequestBody Comment comment) {
             comment.setCreatedAt(new Timestamp(System.currentTimeMillis()));
             comment.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
             commentService.save(comment);
-            return "redirect:/post/" + comment.getPostId();
-        }
     }
 
     @RequestMapping(value = "/commentPost/{id}", method = RequestMethod.GET)
