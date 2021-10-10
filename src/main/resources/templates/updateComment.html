@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Comment</title>
+</head>
+<body>
+
+<div>
+    <form autocomplete="off" action="#" th:action="@{/updateComment}"
+          th:object="${comment}" method="post" role="form">
+
+        <h2 >update comment</h2>
+
+        <div>
+      <textarea th:field="*{comment}"
+                placeholder="Comment" /></textarea>
+        </div>
+
+        <input type="hidden" th:field="*{postId}"/>
+        <input type="hidden" th:field="*{name}"/>
+        <input type="hidden" th:field="*{email}"/>
+        <input type="hidden" th:field="*{Id}"/>
+
+
+
+        <div>
+            <button type="submit" class="btn btn-primary btn-block">Comment</button>
+        </div>
+
+    </form>
+</div>
+<div th:if="${comment.id}">
+<form action="#" th:action="@{'/comment/{id}'(id=${comment.id})}" th:method="delete">
+    <div >
+        <input type="hidden" name="_method" value="delete"/>
+        <button type="submit"  th:text="Delete">Delete</button>
+    </div>
+</form>
+</div>
+</body>
+</html>

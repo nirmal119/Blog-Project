@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>View Post</title>
+</head>
+<body>
+  <div>
+      <h1 th:text="${post.title}">Title</h1>
+      <div th:text="'Created: ' + ${#dates.format(post.createdAt, 'dd-MMM-yyyy')} + ' by '">Created by</div>
+      <div><a th:text="${post.author}">User</a></div>
+      <!--      <div><a th:text="${post.user.username}" th:href="@{'/blog/' + ${post.user.username}}">User</a></div>-->
+
+      <table>
+          <thead>
+          <tr>
+              <th> Tags </th>
+          </tr>
+          </thead>
+          <tbody>
+
+          </tr>
+          <tr th:each="tag : ${post.tags}">
+              <td><span th:text="${tag.name}"> Title </span></td>
+          </tr>
+          </tbody>
+      </table>
+      <h3 th:text="${post.content}">Body</h3>
+  </div>
+
+
+  <!--Only show these buttons if the user is the owner of post-->
+  <div sec:authorize="isAuthenticated()" th:if="${username}">
+      <div >
+          <a th:href="@{'/editPost/{id}'(id=${post.id})}">
+              <button type="button"  th:text="Edit">Edit</button>
+          </a>
+
+      </div>
+  </div>
+
+  <div class="well" th:each="comment : ${comments}">
+      <h4>Comments</h4>
+      <h3 th:text="${comment.comment}">comment</h3>
+      <div th:text="'Created: ' + ${#dates.format(comment.createdAt, 'dd-MMM-yyyy')} + ' by '">
+          Created by
+      </div>
+      <div><a th:text="${comment.name}"></a>
+      </div>
+      <div sec:authorize="isAuthenticated()" th:if="${username}">
+          <div >
+              <a th:href="@{/editComment/{id}/{commentId}(id=${post.id},commentId=${comment.id})}">
+                  <button type="button"  th:text="Edit">Edit Comment</button>
+              </a>
+
+          </div>
+      </div>
+  </div>
+  <div>
+      <div>
+          <a th:href="@{'/commentPost/{id}'(id=${post.id})}" >
+              <button type="button"th:text="Comment">Comment</button>
+          </a>
+      </div>
+  </div>
+
+</body>
+</html>

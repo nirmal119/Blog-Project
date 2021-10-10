@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Write Comment</title>
+</head>
+<body>
+
+<div>
+  <form autocomplete="off" action="#" th:action="@{/createComment}"
+        th:object="${newComment}" method="post" role="form">
+
+    <h2 >Write new comment</h2>
+
+    <div>
+      <input type="text" th:field="*{name}" placeholder="Name"/>
+    </div>
+    <div>
+      <input type="text" th:field="*{email}" placeholder="Email"/>
+    </div>
+<!--    <div><input th:field="*{comment}" name="comment">-->
+      <textarea th:field="*{comment}"
+                placeholder="Comment" name="comment"></textarea>
+<!--    </div>-->
+
+    <input type="hidden" th:field="*{postId}" name="postId"/>
+
+    <div>
+      <button type="submit" class="btn btn-primary btn-block">Comment</button>
+    </div>
+
+  </form>
+</div>
+
+</body>
+</html>

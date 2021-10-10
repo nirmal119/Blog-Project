@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>filter</title>
+</head>
+<body>
+
+<a th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+   th:href="${urlBuilder.replaceQueryParam('order', 'asc').toUriString()}">
+    <button type="button" >older first</button>
+</a>
+
+<a th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+th:href="${urlBuilder.replaceQueryParam('order', 'desc').toUriString()}">
+<button type="button" >latest first</button>
+</a>
+
+<a th:with="urlBuilder=${T(org.springframework.web.servlet.support.ServletUriComponentsBuilder).fromCurrentRequest()}"
+   th:href="${urlBuilder.replaceQueryParam('start', page+1).toUriString()}">
+    <button type="button" >latest first</button>
+</a>
+
+<form th:action="@{/search}">
+    <input type="text" th:name="search"/>
+    <input type="submit" value="search"/>
+</form>
+<div align="center" th:each="post : ${posts}">
+    <div>
+        <h1 th:text="${post.title}" >Title</h1>
+        <div th:text="'Created: ' + ${#dates.format(post.createdAt, 'dd-MMM-yyyy')} + ' by '">Created by</div><div><a th:text="${post.author}">User</a></div>
+        <h5 th:text="${post.excerpt}">Body</h5>
+        <a th:href="@{'/post/' + ${post.id}}">
+            <button type="button" th:text="Read">Read</button>
+        </a>
+    </div>
+</div>
+</body>
+</html>
