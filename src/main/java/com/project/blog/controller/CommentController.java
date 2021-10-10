@@ -36,30 +36,26 @@ public class CommentController {
     }
 
     @RequestMapping(value = "/commentPost/{id}", method = RequestMethod.GET)
-    public String commentPostWithId(@PathVariable Long id,
-                                    Model model) {
+    public Comment commentPostWithId(@PathVariable Long id) {
         Comment comment = new Comment();
         comment.setPostId(id);
-        model.addAttribute("newComment", comment);
-        return "/writeComment";
+        return comment;
     }
 
     @RequestMapping(value = "/editComment/{id}/{commentId}", method = RequestMethod.GET)
-    public Map<String,Object> editComment(@PathVariable Long id,
+    public Comment editComment(@PathVariable Long id,
                                           @PathVariable Long commentId,
                                           Principal principal) throws Throwable {
         Optional<Post> optionalPost = postService.findPostById(id);
         Optional<Comment> optionalComment = commentService.getComment(commentId);
-        Map<String,Object> objectsToEdit = new HashMap<>();
-
+        Comment comment = new Comment();
         if (optionalPost.isPresent()) {
             Post post = optionalPost.get();
             if (isPrincipalOwnerOfPost(principal, post)) {
                 if (optionalComment.isPresent()) {
-                    Comment comment = optionalComment.get();
-                    objectsToEdit.put("comment", comment);
+                    comment = optionalComment.get();
                 }
-                return objectsToEdit;
+                return comment;
             } else {
                 throw (Throwable) ObjectNotFoundException;
             }
@@ -68,7 +64,7 @@ public class CommentController {
         }
     }
 
-    @RequestMapping(value = "/updateComment", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateComment", method = RequestMethod.PUT)
     public void updateComment(@RequestBody Comment comment){
         Optional<Comment> optionalComment = commentService.getComment(comment.getId());
         Comment updateComment = new Comment();
@@ -81,23 +77,20 @@ public class CommentController {
     }
 
     @RequestMapping(value = "/comment/{id}", method = RequestMethod.DELETE)
-    public String deleteComment(@PathVariable Long id,
+    public void deleteComment(@PathVariable Long id,
                                    Principal principal) {
         Optional<Comment> optionalComment = commentService.getComment(id);
 
         if (optionalComment.isPresent()) {
             Comment comment = optionalComment.get();
             Optional<Post> optionalPost = postService.findPostById(comment.getPostId());
-            Post post = optionalPost.get();
+            if(optionalPost.isPresent()){
+                Post post = optionalPost.get();
 
-            if (isPrincipalOwnerOfPost(principal, post)) {
-                commentService.delete(comment);
-                return "redirect:/";
-            } else {
-                return "/403";
+              if (isPrincipalOwnerOfPost(principal, post)) {
+                  commentService.delete(comment);
+              }
             }
-        } else {
-            return "/fail";
         }
     }
 

@@ -150,9 +150,7 @@ public class PostController {
         }
     }
 
-
-
     private boolean isPrincipalOwnerOfPost(Principal principal, Post post) {
         return principal != null && principal.getName().equals(post.getAuthor());
-   }
+    }
 }
