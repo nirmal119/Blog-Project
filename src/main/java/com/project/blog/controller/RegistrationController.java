@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -24,15 +25,13 @@ public class RegistrationController {
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
-    public String registration(Model model) {
-        model.addAttribute("user", new User());
-        return "/registration";
+    public User registration() {
+        return new User();
     }
 
     @RequestMapping(value = "/registration", method = RequestMethod.POST)
-    public String createNewUser(@ModelAttribute("user") User user,
-                                BindingResult bindingResult,
-                                Model model) {
+    public void createNewUser(@RequestBody User user,
+                                BindingResult bindingResult) {
         if (userService.findByEmail(user.getEmail()).isPresent()) {
             bindingResult
                     .rejectValue("email", "error.user",
@@ -48,9 +47,6 @@ public class RegistrationController {
             user.setRole("ROLE_USER");
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             userService.save(user);
-            model.addAttribute("successMessage", "User has been registered successfully");
-            model.addAttribute("user", new User());
         }
-        return "/registration";
     }
 }

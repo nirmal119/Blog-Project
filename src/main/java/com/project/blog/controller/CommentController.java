@@ -5,6 +5,7 @@ import com.project.blog.entity.Post;
 import com.project.blog.service.CommentService;
 import com.project.blog.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -51,17 +52,14 @@ public class CommentController {
         Comment comment = new Comment();
         if (optionalPost.isPresent()) {
             Post post = optionalPost.get();
-            if (isPrincipalOwnerOfPost(principal, post)) {
+            if (isPrincipalOwnerOfPost(principal, post) || hasRoleAdmin()) {
                 if (optionalComment.isPresent()) {
                     comment = optionalComment.get();
                 }
-                return comment;
-            } else {
-                throw (Throwable) ObjectNotFoundException;
+
             }
-        } else {
-            throw (Throwable) ObjectNotFoundException;
         }
+        return comment;
     }
 
     @RequestMapping(value = "/updateComment", method = RequestMethod.PUT)
@@ -87,7 +85,7 @@ public class CommentController {
             if(optionalPost.isPresent()){
                 Post post = optionalPost.get();
 
-              if (isPrincipalOwnerOfPost(principal, post)) {
+              if (isPrincipalOwnerOfPost(principal, post) || hasRoleAdmin()) {
                   commentService.delete(comment);
               }
             }
@@ -96,5 +94,11 @@ public class CommentController {
 
     private boolean isPrincipalOwnerOfPost(Principal principal, Post post) {
         return principal != null && principal.getName().equals(post.getAuthor());
+    }
+
+    private boolean hasRoleAdmin()
+    {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
     }
 }

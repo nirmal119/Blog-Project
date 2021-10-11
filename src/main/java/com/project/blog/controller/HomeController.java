@@ -36,16 +36,7 @@ public class HomeController {
     public Page<Post> home(@RequestParam(value = "start", defaultValue = "1") int start,
                                              @RequestParam(value = "sortField", defaultValue = "publishedAt") String sortField,
                                              @RequestParam(value = "order", defaultValue = "desc") String order) {
-//        Page<Post> posts = postService.getAllPosts(start, sortField, order);
-//        List<String> authors = postService.getAuthors();
-//        List<String> tags = tagService.getTags();
-//        model.addAttribute("tags", tags);
-//        model.addAttribute("authors", authors);
-//        model.addAttribute("posts",posts );
-//        model.addAttribute("page", start);
-//        model.addAttribute("totalPages", posts.getTotalPages());
-//        model.addAttribute("sortField", sortField);
-//        model.addAttribute("order", order);
+
         return postService.getAllPosts(start, sortField, order);
     }
 
@@ -55,18 +46,7 @@ public class HomeController {
                        @RequestParam(value = "order", defaultValue = "desc") String order,
                              @RequestParam(value = "search", required = false) String search,
                        Model model) {
-//        Page<Post> posts = postService.searchPosts(start, sortField, order, search);
-//        List<String> authors = postService.getAuthors();
-//        List<String> tags = tagService.getTags();
-//        model.addAttribute("tags", tags);
-//        model.addAttribute("authors", authors);
-//
-//        model.addAttribute("posts", posts);
-//        model.addAttribute("page", start);
-//        model.addAttribute("totalPages", posts.getTotalPages());
-//        model.addAttribute("sortField", sortField);
-//        model.addAttribute("order", order);
-//        model.addAttribute("search", search);
+
         return postService.searchPosts(start, sortField, order, search);
     }
 
@@ -94,9 +74,6 @@ public class HomeController {
             tags.add("~");
         }
 
-//        Page<Post> posts = postService.getPageOfFilteredPost(authors, tags, publishedAt, start, sortField, order);
-//        model.addAttribute("posts",posts);
-//        model.addAttribute("page",start);
         return postService.getPageOfFilteredPost(authors, tags, publishedAt, start, sortField, order);
     }
 

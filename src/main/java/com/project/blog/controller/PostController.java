@@ -7,12 +7,7 @@ import com.project.blog.entity.User;
 import com.project.blog.service.CommentService;
 import com.project.blog.service.PostService;
 import com.project.blog.service.UserService;
-import org.hibernate.ObjectNotFoundException;
-import org.springframework.data.domain.Page;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -104,13 +99,6 @@ public class PostController {
         if (optionalPost.isPresent()) {
             post = optionalPost.get();
         }
-//            model.addAttribute("post", post);
-//            model.addAttribute("comments", comments);
-//            if (isPrincipalOwnerOfPost(principal, post)) {
-//                model.addAttribute("username", principal.getName());
-//            }
-//
-//        }
             Map<String,Object> postData= new HashMap<>();
         postData.put("post", post);
         postData.put("comments", comments);
@@ -126,7 +114,7 @@ public class PostController {
 
         if (optionalPost.isPresent()) {
             Post post = optionalPost.get();
-            if (isPrincipalOwnerOfPost(principal, post)) {
+            if (isPrincipalOwnerOfPost(principal, post) || hasRoleAdmin()) {
                 objectsToEdit.put("post", post);
                 objectsToEdit.put("tag", tag);
                 return objectsToEdit;
@@ -144,7 +132,7 @@ public class PostController {
 
         if (optionalPost.isPresent()) {
             Post post = optionalPost.get();
-            if (isPrincipalOwnerOfPost(principal, post)) {
+            if (isPrincipalOwnerOfPost(principal, post) || hasRoleAdmin()) {
                 postService.delete(post);
             }
         }
@@ -152,5 +140,10 @@ public class PostController {
 
     private boolean isPrincipalOwnerOfPost(Principal principal, Post post) {
         return principal != null && principal.getName().equals(post.getAuthor());
+    }
+    private boolean hasRoleAdmin()
+    {
+        return SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
     }
 }

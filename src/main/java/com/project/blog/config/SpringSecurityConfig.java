@@ -21,25 +21,25 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         return new UserServiceImpl();
     }
 
-//    @Override
-//    protected void configure(HttpSecurity http) throws Exception {
-//        http
-//                .csrf().disable()
-//                .authorizeRequests()
-//                .antMatchers("/**", "/create/**").hasAnyRole("ADMIN")
-//                .antMatchers("/", "/registration", "/post/**", "/search/**", "/filter/**", "/commentPost/**").permitAll()
-//                .antMatchers("/newPost/**", "/commentPost/**", "/createComment/**", "/editComment/**", "/editPost/**", "/create/**", "/save/**").hasRole("USER")
-//                .anyRequest().authenticated()
-//                .and()
-//                .formLogin()
-//                .loginPage("/login").permitAll()
-//                .defaultSuccessUrl("/")
-//                .and()
-//                .logout().invalidateHttpSession(true)
-//                .clearAuthentication(true)
-//                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-//                .logoutSuccessUrl("/logoutSuccess").permitAll();
-//    }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
+                .authorizeRequests()
+                .antMatchers("/**", "/create/**").hasAnyRole("ADMIN")
+                .antMatchers("/", "/registration", "/post/**", "/search/**", "/filter/**", "/commentPost/**").permitAll()
+                .antMatchers("/newPost/**", "/commentPost/**", "/createComment/**", "/editComment/**", "/editPost/**", "/create/**", "/save/**").hasRole("USER")
+                .anyRequest().authenticated()
+                .and()
+                .formLogin()
+                .loginPage("/login").permitAll()
+                .defaultSuccessUrl("/")
+                .and()
+                .logout().invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/logoutSuccess").permitAll();
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
