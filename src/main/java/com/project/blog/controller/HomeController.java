@@ -24,12 +24,10 @@ import java.util.List;
 @RestController
 public class HomeController {
     private final PostService postService;
-    private final TagService tagService;
 
     @Autowired
     public HomeController(PostService postService, TagService tagService) {
         this.postService = postService;
-        this.tagService = tagService;
     }
 
     @GetMapping
